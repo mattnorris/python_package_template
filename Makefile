@@ -47,7 +47,7 @@ ruff:
 	@poetry run ruff check $(CODE)
 
 # Lint code with all linters.
-lint: black pylint ruff bandit scan
+lint: black pylint ruff bandit secrets
 
 
-.PHONY: format pylint lint ruff black bandit scan pre-commit
+.PHONY: format pylint lint ruff black bandit secrets pre-commit
