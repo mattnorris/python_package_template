@@ -1,0 +1,56 @@
+---
+# Renames the Python package to match the repository name.
+# Checks if the current package name is the template name and renames it if necessary.
+#
+# Required secrets:
+#
+#  RENAME_PAT: A GitHub Personal Access Token (PAT) with repo permissions.
+#
+#  For fine-grained permissions, create a token with the following scopes:
+#    - Contents: Read and write (to modify files)
+#    - Metadata: Read-only (selected by default)
+#    - Pull requests: Read and write (to create PRs)
+#    - Workflows: Read and write (to modify workflow files)
+
+name: Rename package
+
+env:
+  PACKAGE_NAME: python_package_template
+
+on:
+  push:
+    branches:
+      - main
+  # Allow manual triggering.
+  workflow_dispatch:
+
+jobs:
+  rename:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Check if the old package name still exists and is different from the repo name.
+      - name: Check for old package name
+        id: check_name
+        run: |
+          # Get repo name, excluding the owner name.
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+          echo "Repository name: $REPO_NAME"
+
+          # Check if old package name exists and is different from the repo name.
+          if grep -r '${{env.PACKAGE_NAME}}' . && [ "${{env.PACKAGE_NAME}}" != "$REPO_NAME" ]; then
+            echo "Old package name found. Will rename it."
+            echo "should_rename=true" >> $GITHUB_OUTPUT
+          else
+            echo "Renaming not needed."
+            echo "should_rename=false" >> $GITHUB_OUTPUT
+          fi
+
+      # Rename the package if needed.
+      - name: Rename package
+        if: steps.check_name.outputs.should_rename == 'true'
+        uses: kota65535/github-template-rename-action@v1
+        with:
+          from-name: ${{env.PACKAGE_NAME}}
+          github-token: ${{ secrets.RENAME_PAT }}

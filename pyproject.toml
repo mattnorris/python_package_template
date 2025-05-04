@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "python-package-template"
+version = "0.1.0"
+description = ""
+authors = ["Matt Norris <matt@mattnorris.dev>"]
+readme = "README.md"
+packages = [{ include = "python_package_template", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+python-dotenv = "^1.1.0"
+python-decouple = "^3.8"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+pylint = "^3.3.6"
+perflint = "^0.8.1"
+ruff = "^0.11.7"
+bandit = "^1.8.3"
+pytest = "^8.3.5"
+pre-commit = "^4.2.0"
+detect-secrets = "^1.5.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
